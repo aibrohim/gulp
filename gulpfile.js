@@ -9,6 +9,7 @@ var rename = require("gulp-rename");
 var posthtml = require("gulp-posthtml");
 var include = require("posthtml-include");
 var svgstore = require("gulp-svgstore");
+var del = require("del");
 
 var server = require("browser-sync").create();
 
@@ -31,7 +32,7 @@ gulp.task("html", function () {
     .pipe(gulp.dest("dist/"))
 });
 
-gulp.task("refresh", function () {
+gulp.task("refresh", function (done) {
   server.reload();
   done();
 });
@@ -66,3 +67,10 @@ gulp.task("server", function () {
   gulp.watch("src/img/icon-*.svg", gulp.series("sprite", "html", "refresh"))
   gulp.watch("src/*.html", gulp.series("html", "refresh"))
 });
+
+gulp.task("clean", function () {
+  return del("dist");
+});
+
+gulp.task("build", gulp.series("clean", "copy", "css", "sprite", "html"));
+gulp.task("start", gulp.series("build", "server"))
